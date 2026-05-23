@@ -5,6 +5,7 @@ import Lenis from 'lenis';
 import { Navbar } from './components/Navbar';
 import Home from './pages/Home';
 import ServiceDetail from './pages/ServiceDetail';
+import Admin from './pages/Admin';
 
 // Custom Colors
 const colors = {
@@ -116,6 +117,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/service/:id" element={<ServiceDetail />} />
+            <Route path="/admin" element={<Admin />} />
           </Routes>
         </main>
       </div>

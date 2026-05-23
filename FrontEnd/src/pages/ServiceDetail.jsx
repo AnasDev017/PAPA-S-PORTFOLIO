@@ -1,18 +1,61 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { uniformCategories } from '../data/uniforms';
+import axios from 'axios';
 
 export default function ServiceDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const service = uniformCategories.find(c => c.id === id);
+    const [service, setService] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     // Scroll to top on mount
     useEffect(() => {
         window.scrollTo(0, 0);
     }, [id]);
+
+    useEffect(() => {
+        const fetchService = async () => {
+            // Check static data first
+            const staticService = uniformCategories.find(c => c.id === id);
+            if (staticService) {
+                setService(staticService);
+                setLoading(false);
+                return;
+            }
+
+            // If not found, try backend
+            try {
+                const response = await axios.get(`http://localhost:3000/api/cards/${id}`);
+                if (response.data) {
+                    const dynamicService = {
+                        ...response.data,
+                        img: response.data.image,
+                        category: "Custom Service",
+                        fullDesc: response.data.description,
+                        features: ["Premium Quality Material", "Custom Branding Available", "Durable Stitching", "Fast Turnaround"]
+                    };
+                    setService(dynamicService);
+                }
+            } catch (error) {
+                console.error('Error fetching service:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchService();
+    }, [id]);
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-[#F5F3EE]">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#0F4A46]"></div>
+            </div>
+        );
+    }
 
     if (!service) {
         return (
@@ -86,7 +129,7 @@ export default function ServiceDetail() {
                         >
                             <h3 className="text-2xl font-serif text-[#C8A96B] mb-6">Key Specifications & Features</h3>
                             <ul className="space-y-4">
-                                {service.features.map((feature, idx) => (
+                                {service.features && service.features.map((feature, idx) => (
                                     <motion.li
                                         key={idx}
                                         initial={{ opacity: 0, x: -10 }}

@@ -1,4 +1,5 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
+import axios from 'axios';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Scissors, CheckCircle2, Star, ArrowRight, MapPin, Phone, Mail, Award, Clock } from 'lucide-react';
@@ -48,6 +49,22 @@ const SectionHeader = ({ title, subtitle, light = false }) => (
 
 const Hero = () => {
     const heroRef = useRef(null);
+    const [profileImage, setProfileImage] = useState("https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?auto=format&fit=crop&q=80&w=1000");
+
+    useEffect(() => {
+        const fetchProfileImage = async () => {
+            try {
+                const response = await axios.get('http://localhost:3000/api/profile/latest');
+                if (response.data && response.data.profileImage) {
+                    setProfileImage(response.data.profileImage);
+                }
+            } catch (error) {
+                console.error('Error fetching profile image:', error);
+            }
+        };
+        fetchProfileImage();
+    }, []);
+
     const { scrollYProgress } = useScroll({
         target: heroRef,
         offset: ["start start", "end start"]
@@ -144,7 +161,7 @@ const Hero = () => {
                         <div className="w-full h-full bg-[#0F4A46]/10 absolute inset-0 z-10 mix-blend-overlay"></div>
                         <motion.img
                             style={{ y: yParallax }}
-                            src="https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?auto=format&fit=crop&q=80&w=1000"
+                            src={profileImage}
                             alt="Uniform Manufacturing"
                             className="w-full h-[120%] object-cover object-center -top-[10%] relative"
                         />
@@ -270,6 +287,28 @@ const About = () => {
 };
 
 const ServicesGrid = () => {
+    const [cards, setCards] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchCards = async () => {
+            try {
+                const response = await axios.get('http://localhost:3000/api/cards');
+                if (response.data && response.data.length > 0) {
+                    setCards(response.data);
+                } else {
+                    setCards(uniformCategories); // Fallback to static data
+                }
+            } catch (error) {
+                console.error('Error fetching cards:', error);
+                setCards(uniformCategories);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchCards();
+    }, []);
+
     return (
         <section id="services" className="py-24 lg:py-32 bg-[#F5F3EE]">
             <div className="container mx-auto px-6 md:px-12">
@@ -279,8 +318,8 @@ const ServicesGrid = () => {
                 />
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16">
-                    {uniformCategories.map((item, idx) => (
-                        <Link to={`/service/${item.id}`} key={item.id}>
+                    {cards.map((item, idx) => (
+                        <Link to={`/service/${item.id || item._id}`} key={item.id || item._id}>
                             <motion.div
                                 initial={{ opacity: 0, y: 50 }}
                                 whileInView={{ opacity: 1, y: 0 }}
@@ -289,7 +328,7 @@ const ServicesGrid = () => {
                                 className="group relative h-[450px] rounded-[2rem] overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl transition-shadow duration-500 block"
                             >
                                 <img
-                                    src={item.img}
+                                    src={item.img || item.image}
                                     alt={item.title}
                                     className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110"
                                 />
@@ -298,11 +337,11 @@ const ServicesGrid = () => {
 
                                 <div className="absolute inset-0 p-8 flex flex-col justify-end transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 ease-[0.16,1,0.3,1]">
                                     <div className="inline-block px-3 py-1 bg-[#C8A96B] text-[#0F4A46] text-xs font-bold uppercase tracking-wider rounded-full mb-3 self-start shadow-sm">
-                                        {item.category}
+                                        {item.category || "Service"}
                                     </div>
                                     <h3 className="text-2xl lg:text-3xl font-serif text-[#F5F3EE] mb-2">{item.title}</h3>
                                     <p className="text-[#C7D2C8] text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100 line-clamp-2">
-                                        {item.desc}
+                                        {item.desc || item.description}
                                     </p>
 
                                     <div className="w-0 h-[2px] bg-[#C8A96B] mt-4 group-hover:w-full transition-all duration-[1s] ease-out"></div>
