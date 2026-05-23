@@ -7,7 +7,6 @@ const connectDB = async () => {
     } catch (error) {
         console.error(`MongoDB Connection Error: ${error.message}`);
         console.error("Tip: If you see ENOTFOUND, it's a DNS issue. Try using the 'Standard Connection String' from MongoDB Atlas (not the SRV one).");
-        process.exit(1);
     }
 };
 

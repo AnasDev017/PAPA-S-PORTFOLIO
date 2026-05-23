@@ -17,13 +17,13 @@ if (!process.env.DATA_BASE_URL) {
 connectDB();
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 app.use(cors({
     origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"]
 }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/profile', profileRoutes); 
