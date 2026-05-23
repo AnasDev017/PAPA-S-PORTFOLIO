@@ -34,7 +34,9 @@ export const createCard = async (req, res) => {
         await newCard.save();
 
         // Delete local file
-        fs.unlinkSync(req.file.path);
+        if (req.file && req.file.path) {
+            fs.unlinkSync(req.file.path);
+        }
 
         res.status(201).json({
             message: 'Service card created successfully',

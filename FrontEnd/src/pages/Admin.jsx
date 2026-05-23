@@ -36,7 +36,8 @@ const Admin = () => {
     const fetchExistingCards = async () => {
         setLoadingCards(true);
         try {
-            const res = await axios.get('https://papa-s-portfolio-ds4q.vercel.app/api/cards');
+            const API_URL = import.meta.env.VITE_API_URL || 'https://papa-s-portfolio-ds4q.vercel.app';
+            const res = await axios.get(`${API_URL}/api/cards`);
             setExistingCards(res.data);
         } catch (err) {
             console.error('Error fetching cards:', err);
@@ -64,7 +65,8 @@ const Admin = () => {
 
         if (result.isConfirmed) {
             try {
-                await axios.delete(`https://papa-s-portfolio-ds4q.vercel.app/api/cards/${id}`);
+                const API_URL = import.meta.env.VITE_API_URL || 'https://papa-s-portfolio-ds4q.vercel.app';
+                await axios.delete(`${API_URL}/api/cards/${id}`);
                 Swal.fire({ icon: 'success', title: 'Deleted!', text: 'The card has been removed.' });
                 fetchExistingCards(); // Refresh list
             } catch (err) {
@@ -211,7 +213,8 @@ const Admin = () => {
                                                     formData.append('profileImage', file);
 
                                                     try {
-                                                        const res = await fetch('https://papa-s-portfolio-ds4q.vercel.app/api/profile/upload', {
+                                                        const API_URL = import.meta.env.VITE_API_URL || 'https://papa-s-portfolio-ds4q.vercel.app';
+                                                        const res = await fetch(`${API_URL}/api/profile/upload`, {
                                                             method: 'POST',
                                                             body: formData,
                                                         });
@@ -298,7 +301,8 @@ const Admin = () => {
                                                 formData.append('description', cardDescription);
 
                                                 try {
-                                                    const res = await fetch('https://papa-s-portfolio-ds4q.vercel.app/api/cards/upload', {
+                                                    const API_URL = import.meta.env.VITE_API_URL || 'https://papa-s-portfolio-ds4q.vercel.app';
+                                                    const res = await fetch(`${API_URL}/api/cards/upload`, {
                                                         method: 'POST',
                                                         body: formData,
                                                     });

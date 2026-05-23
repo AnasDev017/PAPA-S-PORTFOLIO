@@ -23,7 +23,9 @@ export const uploadProfileImage = async (req, res) => {
         await newProfile.save();
 
         // Delete local file after upload
-        fs.unlinkSync(req.file.path);
+        if (req.file && req.file.path) {
+            fs.unlinkSync(req.file.path);
+        }
 
         res.status(200).json({
             message: 'Image uploaded to Cloudinary and saved to DB',

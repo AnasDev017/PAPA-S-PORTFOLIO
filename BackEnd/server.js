@@ -25,14 +25,33 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Simple Request Logger
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.url}`);
+    next();
+});
+
+// Root Route
+app.get("/", (req, res) => {
+    res.json({ message: "Portfolio Backend API is running..." });
+});
+
+// Alias for common mistake
+app.get("/latest", (req, res) => {
+    res.redirect("/api/profile/latest");
+});
+
 // Routes
 app.use('/api/profile', profileRoutes); 
 app.use('/api/cards', cardRoutes); 
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+// Only listen if not running as a Vercel Serverless Function
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+    });
+}
 
 export default app;
 
