@@ -8,6 +8,11 @@ import profileRoutes from './routes/profileRoutes.js';
 import cardRoutes from './routes/cardRoutes.js';
 dotenv.config();
 
+// Debug: Check if Environment Variables are loaded
+if (!process.env.DATA_BASE_URL) {
+    console.error("CRITICAL ERROR: DATA_BASE_URL is not defined. Check your Vercel Environment Variables.");
+}
+
 // Connect to Database
 connectDB();
 

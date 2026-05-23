@@ -8,7 +8,7 @@ const router = express.Router();
 // Multer storage config (moved from server.js)
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        const uploadDir = './uploads';
+        const uploadDir = '/tmp'; // Use /tmp for Vercel serverless compatibility
         if (!fs.existsSync(uploadDir)) {
             fs.mkdirSync(uploadDir);
         }
