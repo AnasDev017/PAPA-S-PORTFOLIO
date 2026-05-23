@@ -54,7 +54,7 @@ const Hero = () => {
     useEffect(() => {
         const fetchProfileImage = async () => {
             try {
-                const response = await axios.get('http://localhost:3000/api/profile/latest');
+                const response = await axios.get('https://papa-s-portfolio-ds4q.vercel.app/api/profile/latest');
                 if (response.data && response.data.profileImage) {
                     setProfileImage(response.data.profileImage);
                 }
@@ -293,7 +293,7 @@ const ServicesGrid = () => {
     useEffect(() => {
         const fetchCards = async () => {
             try {
-                const response = await axios.get('http://localhost:3000/api/cards');
+                const response = await axios.get('https://papa-s-portfolio-ds4q.vercel.app/api/cards');
                 if (response.data && response.data.length > 0) {
                     setCards(response.data);
                 } else {

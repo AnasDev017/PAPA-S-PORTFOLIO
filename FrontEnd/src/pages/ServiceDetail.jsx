@@ -28,7 +28,7 @@ export default function ServiceDetail() {
 
             // If not found, try backend
             try {
-                const response = await axios.get(`http://localhost:3000/api/cards/${id}`);
+                const response = await axios.get(`https://papa-s-portfolio-ds4q.vercel.app/api/cards/${id}`);
                 if (response.data) {
                     const dynamicService = {
                         ...response.data,
