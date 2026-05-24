@@ -458,7 +458,7 @@ const Contact = () => {
                                 </div>
                                 <div>
                                     <h4 className="text-lg font-serif font-bold mb-1 group-hover:text-[#C8A96B] transition-colors">Call Us</h4>
-                                    <p className="text-[#C7D2C8] text-sm">+971 50 123 4567<br />Mon-Sat: 9am - 7pm</p>
+                                    <p className="text-[#C7D2C8] text-sm">+971 50 728 9811<br />Mon-Sat: 9am - 7pm</p>
                                 </div>
                             </div>
 
@@ -468,7 +468,7 @@ const Contact = () => {
                                 </div>
                                 <div>
                                     <h4 className="text-lg font-serif font-bold mb-1 group-hover:text-[#C8A96B] transition-colors">Email</h4>
-                                    <p className="text-[#C7D2C8] text-sm">info@uaeuniforms.com</p>
+                                    <p className="text-[#C7D2C8] text-sm">tahirhussain890@gmail.com</p>
                                 </div>
                             </div>
                         </div>
