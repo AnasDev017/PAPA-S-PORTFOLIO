@@ -415,14 +415,43 @@ const Testimonials = () => {
 
 const Contact = () => {
     const [formState, setReactFormState] = React.useState('idle');
+    const [formData, setFormData] = React.useState({
+        companyName: '',
+        email: '',
+        category: '',
+        details: ''
+    });
+
+    const ADMIN_WHATSAPP = '971507289811';
+
+    const handleChange = (e) => {
+        setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
         setReactFormState('submitting');
+
+        const message =
+`🧾 *New Quote Request*
+
+🏢 *Company:* ${formData.companyName}
+📧 *Email:* ${formData.email}
+👔 *Category:* ${formData.category || uniformCategories[0]?.title}
+📦 *Details:* ${formData.details}
+
+_Sent from TH Studios Website_`;
+
+        const encodedMessage = encodeURIComponent(message);
+        const whatsappURL = `https://wa.me/${ADMIN_WHATSAPP}?text=${encodedMessage}`;
+
+        window.open(whatsappURL, '_blank');
+
+        setReactFormState('success');
         setTimeout(() => {
-            setReactFormState('success');
-            setTimeout(() => setReactFormState('idle'), 4000);
-        }, 1500);
+            setReactFormState('idle');
+            setFormData({ companyName: '', email: '', category: '', details: '' });
+        }, 4000);
     };
 
     return (
@@ -501,25 +530,54 @@ const Contact = () => {
                             <form onSubmit={handleSubmit} className="space-y-8">
                                 <div>
                                     <label className="block text-sm font-semibold mb-2 uppercase tracking-wider text-[#C7D2C8]">Company Name</label>
-                                    <input required type="text" className="w-full bg-transparent border-b border-[#C7D2C8]/30 py-2 focus:outline-none focus:border-[#C8A96B] transition-colors placeholder:text-[#C7D2C8]/40 text-[#F5F3EE]" placeholder="Your Company LLC" />
+                                    <input
+                                        required
+                                        type="text"
+                                        name="companyName"
+                                        value={formData.companyName}
+                                        onChange={handleChange}
+                                        className="w-full bg-transparent border-b border-[#C7D2C8]/30 py-2 focus:outline-none focus:border-[#C8A96B] transition-colors placeholder:text-[#C7D2C8]/40 text-[#F5F3EE]"
+                                        placeholder="Your Company LLC"
+                                    />
                                 </div>
                                 <div className="grid grid-cols-2 gap-8">
                                     <div>
                                         <label className="block text-sm font-semibold mb-2 uppercase tracking-wider text-[#C7D2C8]">Email Address</label>
-                                        <input required type="email" className="w-full bg-transparent border-b border-[#C7D2C8]/30 py-2 focus:outline-none focus:border-[#C8A96B] transition-colors placeholder:text-[#C7D2C8]/40 text-[#F5F3EE]" placeholder="contact@example.com" />
+                                        <input
+                                            required
+                                            type="email"
+                                            name="email"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                            className="w-full bg-transparent border-b border-[#C7D2C8]/30 py-2 focus:outline-none focus:border-[#C8A96B] transition-colors placeholder:text-[#C7D2C8]/40 text-[#F5F3EE]"
+                                            placeholder="contact@example.com"
+                                        />
                                     </div>
                                     <div>
                                         <label className="block text-sm font-semibold mb-2 uppercase tracking-wider text-[#C7D2C8]">Category</label>
-                                        <select className="w-full bg-transparent border-b border-[#C7D2C8]/30 py-2 focus:outline-none focus:border-[#C8A96B] transition-colors text-[#C7D2C8] [&>option]:bg-[#0F4A46] [&>option]:text-[#F5F3EE]">
+                                        <select
+                                            name="category"
+                                            value={formData.category}
+                                            onChange={handleChange}
+                                            className="w-full bg-transparent border-b border-[#C7D2C8]/30 py-2 focus:outline-none focus:border-[#C8A96B] transition-colors text-[#C7D2C8] [&>option]:bg-[#0F4A46] [&>option]:text-[#F5F3EE]"
+                                        >
                                             {uniformCategories.map(cat => (
-                                                <option key={cat.id}>{cat.title}</option>
+                                                <option key={cat.id} value={cat.title}>{cat.title}</option>
                                             ))}
                                         </select>
                                     </div>
                                 </div>
                                 <div>
                                     <label className="block text-sm font-semibold mb-2 uppercase tracking-wider text-[#C7D2C8]">Quantity & Details</label>
-                                    <textarea required rows="3" className="w-full bg-transparent border-b border-[#C7D2C8]/30 py-2 focus:outline-none focus:border-[#C8A96B] transition-colors resize-none placeholder:text-[#C7D2C8]/40 text-[#F5F3EE]" placeholder="Estimate quantity needed and any specific requirements..."></textarea>
+                                    <textarea
+                                        required
+                                        rows="3"
+                                        name="details"
+                                        value={formData.details}
+                                        onChange={handleChange}
+                                        className="w-full bg-transparent border-b border-[#C7D2C8]/30 py-2 focus:outline-none focus:border-[#C8A96B] transition-colors resize-none placeholder:text-[#C7D2C8]/40 text-[#F5F3EE]"
+                                        placeholder="Estimate quantity needed and any specific requirements..."
+                                    />
                                 </div>
                                 <button
                                     disabled={formState === 'submitting'}
@@ -527,7 +585,7 @@ const Contact = () => {
                                     className="w-full py-5 mt-4 pt-8"
                                 >
                                     <div className="w-full py-4 bg-[#C8A96B] text-[#0F4A46] uppercase tracking-widest text-sm font-bold hover:bg-[#F5F3EE] hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex items-center justify-center rounded-lg">
-                                        {formState === 'submitting' ? 'Sending...' : 'SUBMIT REQUEST'}
+                                        {formState === 'submitting' ? 'Opening WhatsApp...' : 'SUBMIT REQUEST'}
                                     </div>
                                 </button>
                             </form>
@@ -536,7 +594,6 @@ const Contact = () => {
                 </div>
 
                 <div className="relative border-t border-[#1F5C56] mt-20 pt-16 pb-8 flex flex-col md:flex-row justify-between items-end gap-6 overflow-hidden min-h-[200px]">
-                    {/* Large Background Text */}
                     <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-full text-center pointer-events-none select-none">
                         <span className="text-[12vw] md:text-[10vw] font-serif font-bold text-[#F5F3EE]/5 leading-none whitespace-nowrap">
                             TAHIR HUSSAIN
