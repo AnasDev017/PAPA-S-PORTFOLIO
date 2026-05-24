@@ -5,9 +5,9 @@ const profileSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    createdAt: {
-        type: Date,
-        default: Date.now
+    cloudinaryId: {
+        type: String,
+        default: null
     }
 }, { timestamps: true });
 

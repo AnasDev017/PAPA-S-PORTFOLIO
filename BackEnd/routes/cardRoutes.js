@@ -1,30 +1,19 @@
 import express from 'express';
-import multer from 'multer';
+import upload from '../config/multer.js';
 import { createCard, getCards, deleteCard, getCardById } from '../controllers/cardController.js';
-import fs from 'fs';
 
 const router = express.Router();
 
-// Multer storage config (consistent with profile)
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        const uploadDir = '/tmp'; // Use /tmp for Vercel serverless compatibility
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir);
-        }
-        cb(null, uploadDir);
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + '-' + uniqueSuffix);
-    }
-});
-
-const upload = multer({ storage: storage });
-
+// POST   /api/cards/upload  → Create a new service card (with image upload)
 router.post('/upload', upload.single('productImage'), createCard);
+
+// GET    /api/cards          → Get all service cards
 router.get('/', getCards);
+
+// GET    /api/cards/:id      → Get a single card by ID
 router.get('/:id', getCardById);
+
+// DELETE /api/cards/:id      → Delete a card (+ Cloudinary image)
 router.delete('/:id', deleteCard);
 
 export default router;
