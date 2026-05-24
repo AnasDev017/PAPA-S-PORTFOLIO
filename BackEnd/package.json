@@ -1,24 +1,21 @@
 {
+  "name": "papa-portfolio-backend",
+  "version": "1.0.0",
+  "description": "Serverless Express backend for Papa's Portfolio",
+  "type": "module",
+  "main": "api/index.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
   "dependencies": {
     "cloudinary": "^2.10.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
-    "express": "^5.2.1",
-    "mongodb": "^7.2.0",
+    "express": "^4.21.2",
     "mongoose": "^9.6.2",
-    "multer": "^2.1.1",
-    "nodemon": "^3.1.14"
-  },
-  "name": "backend",
-  "version": "1.0.0",
-  "description": "",
-  "main": "server.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "module"
+    "multer": "^1.4.5-lts.1",
+    "nodemon": "^3.1.14",
+    "serverless-http": "^3.2.0"
+  }
 }
