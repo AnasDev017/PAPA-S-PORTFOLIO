@@ -7,82 +7,51 @@ import cardRoutes from './routes/cardRoutes.js';
 
 dotenv.config();
 
-// Check environment variables
 if (!process.env.DATA_BASE_URL) {
-    console.error("CRITICAL ERROR: DATA_BASE_URL is not defined. Check your .env or Vercel environment variables.");
+    console.error("CRITICAL ERROR: DATA_BASE_URL is not defined.");
+    process.exit(1);
 }
-
-// Connect to MongoDB
-connectDB();
 
 const app = express();
 
-// CORS
 app.use(cors({
     origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"]
 }));
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Request Logger
 app.use((req, res, next) => {
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
     next();
 });
 
-// =====================
-//   API Routes
-// =====================
-
-// Health check
-// GET /
 app.get("/", (req, res) => {
-    res.json({
-        status: "ok",
-        message: "Portfolio Backend API is running",
-        endpoints: {
-            profile: {
-                upload: "POST /api/profile/upload",
-                latest: "GET  /api/profile/latest",
-            },
-            cards: {
-                create: "POST   /api/cards/upload",
-                getAll: "GET    /api/cards",
-                getOne: "GET    /api/cards/:id",
-                delete: "DELETE /api/cards/:id",
-            }
-        }
-    });
+    res.json({ status: "ok", message: "Portfolio Backend API is running (local)" });
 });
 
 app.use('/api/profile', profileRoutes);
 app.use('/api/cards', cardRoutes);
 
-// 404 handler
 app.use((req, res) => {
-    res.status(404).json({
-        message: `Route '${req.url}' not found`,
-        availableRoutes: [
-            "GET  /",
-            "GET  /api/profile/latest",
-            "POST /api/profile/upload",
-            "GET  /api/cards",
-            "POST /api/cards/upload",
-            "GET  /api/cards/:id",
-            "DELETE /api/cards/:id",
-        ]
-    });
+    res.status(404).json({ message: `Route '${req.url}' not found` });
 });
 
-// Only listen locally — Vercel doesn't need app.listen()
-if (!process.env.VERCEL) {
-    const PORT = process.env.PORT || 3000;
-    app.listen(PORT, () => {
-        console.log(`Server is running on http://localhost:${PORT}`);
-    });
-}
+app.use((err, req, res, next) => {
+    console.error('Unhandled error:', err);
+    res.status(err.status || 500).json({ message: err.message || 'Internal Server Error' });
+});
 
-export default app;
+// Connect first, then start server
+connectDB()
+    .then(() => {
+        const PORT = process.env.PORT || 3000;
+        app.listen(PORT, () => {
+            console.log(`Server running on http://localhost:${PORT}`);
+        });
+    })
+    .catch((err) => {
+        console.error('Failed to connect to MongoDB:', err.message);
+        process.exit(1);
+    });     

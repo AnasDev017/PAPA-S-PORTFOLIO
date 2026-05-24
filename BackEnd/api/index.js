@@ -1,18 +1,15 @@
 import express from 'express';
-import serverless from 'serverless-http';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import connectDB from '../config/db.js';
 import profileRoutes from '../routes/profileRoutes.js';
 import cardRoutes from '../routes/cardRoutes.js';
 
-// Load environment variables from .env (no-op on Vercel, which uses its own env vars)
 dotenv.config();
 
 const app = express();
 
 // ─── Middleware ───────────────────────────────────────────────────────────────
-
 app.use(cors({
     origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -22,14 +19,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ─── Connect to MongoDB before handling any request ──────────────────────────
-// This uses the cached connection — no repeated connects on warm invocations.
 app.use(async (req, res, next) => {
     try {
         await connectDB();
         next();
     } catch (err) {
         console.error('MongoDB connection failed:', err.message);
-        res.status(503).json({ message: 'Database unavailable. Please try again later.' });
+        return res.status(503).json({ message: 'Database unavailable. Please try again later.' });
     }
 });
 
@@ -87,6 +83,6 @@ app.use((err, req, res, next) => {
     });
 });
 
-// ─── Export for Vercel Serverless ─────────────────────────────────────────────
-// Vercel calls this handler on each request. No app.listen() needed.
-export default serverless(app);
+// ─── Export for Vercel ────────────────────────────────────────────────────────
+// Vercel needs a plain Express app exported as default — NO serverless-http wrapper
+export default app;

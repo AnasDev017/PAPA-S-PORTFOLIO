@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 
-// Cache the connection across serverless invocations (avoids cold-start reconnects)
 let cached = global.__mongoConnection;
 
 if (!cached) {
@@ -8,33 +7,33 @@ if (!cached) {
 }
 
 const connectDB = async () => {
-    // If already connected, return the existing connection
     if (cached.conn) {
         return cached.conn;
     }
 
-    // If a connection is in progress, wait for it
     if (!cached.promise) {
-        const opts = {
-            bufferCommands: false, // Don't buffer commands when disconnected
-            maxPoolSize: 10,       // Reuse up to 10 socket connections
-        };
-
         if (!process.env.DATA_BASE_URL) {
             throw new Error('DATA_BASE_URL environment variable is not defined.');
         }
 
+        const opts = {
+            bufferCommands: true,   // ← FIXED: must be true in serverless to avoid race conditions
+            maxPoolSize: 10,
+            serverSelectionTimeoutMS: 10000,  // ← NEW: fail fast if MongoDB is unreachable (10s)
+            socketTimeoutMS: 45000,           // ← NEW: avoid hanging sockets
+        };
+
         cached.promise = mongoose.connect(process.env.DATA_BASE_URL, opts)
-            .then((mongoose) => {
-                console.log('MongoDB connected:', mongoose.connection.host);
-                return mongoose;
+            .then((mongooseInstance) => {
+                console.log('MongoDB connected:', mongooseInstance.connection.host);
+                return mongooseInstance;
             });
     }
 
     try {
         cached.conn = await cached.promise;
     } catch (err) {
-        cached.promise = null; // Reset on failure so next call retries
+        cached.promise = null;
         throw err;
     }
 
